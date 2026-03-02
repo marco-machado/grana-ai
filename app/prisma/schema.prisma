@@ -1,0 +1,55 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/client"
+}
+
+enum AccountType {
+  CHECKING
+  CREDIT
+  SAVINGS
+}
+
+enum SourceType {
+  EMAIL
+  CSV
+  API
+  MANUAL
+}
+
+model Account {
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  type       AccountType
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  sources    Source[]
+}
+
+model Source {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  type       SourceType
+  identifier String
+  account_id String     @db.Uuid
+  account    Account    @relation(fields: [account_id], references: [id])
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+
+  @@unique([account_id, type, identifier])
+}
+
+model Category {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  parent_id  String?    @db.Uuid
+  parent     Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  children   Category[] @relation("CategoryHierarchy")
+  created_at DateTime   @default(now())
+
+  @@unique([name, parent_id])
+}

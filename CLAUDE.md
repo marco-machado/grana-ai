@@ -31,12 +31,14 @@ docker compose up
 # Environment setup: copy env.example to .env and fill values
 ```
 
-## Planned Tech Stack
+## Tech Stack
 
-- **Framework:** Next.js (App Router, `app/` directory)
-- **ORM:** Prisma (schema in `app/prisma/schema.prisma`)
+- **Framework:** Next.js 15 (App Router, `app/app/` directory inside Docker context)
+- **ORM:** Prisma 6 with `prisma-client` generator (schema in `app/prisma/schema.prisma`, output to `app/prisma/generated/client/`)
 - **Database:** PostgreSQL 17
+- **Styling:** Tailwind CSS 4 (CSS-first config, no `tailwind.config.ts`)
 - **AI:** Anthropic Claude API for statement parsing and insights
+- **Runtime:** Node 22 Alpine (Docker)
 
 ## Key Architecture Decisions
 
@@ -54,12 +56,33 @@ docker compose up
 - **`SDD.md`** — Complete system design document. Read this first for full architecture, database schema, data flow, and open design decisions.
 - **`docker-compose.yml`** — Service definitions and dependencies.
 - **`env.example`** — Required environment variables.
+- **`app/prisma/schema.prisma`** — Database schema (Account, Source, Category models).
+- **`app/prisma/seed.ts`** — Idempotent category seed (45 categories: 10 parents + 35 children, Portuguese).
+- **`app/lib/prisma.ts`** — PrismaClient singleton (globalThis pattern for dev hot-reload).
+- **`app/components/Sidebar.tsx`** — Navigation sidebar with 8 sections.
+- **`app/app/(dashboard)/layout.tsx`** — Dashboard layout wrapping all pages.
 
 ## Open Design Decisions
 
 These items from SDD.md §5 are still unresolved:
 - Staging table schema (temporary storage before promotion to `transactions`)
-- Full Prisma schema (`schema.prisma`)
-- Default category taxonomy and seed data
 - Categorization rules engine (DB table vs config file)
 - Historical data ingestion strategy (first-run backlog processing)
+
+## Active Technologies
+- TypeScript 5.x (Node 22 Alpine) + Next.js 15, React 19, Tailwind CSS 4, Prisma ORM, `tsx` (seed runner) (001-project-scaffold)
+- PostgreSQL 17 (Docker), accessed via Prisma. Schema in `app/prisma/schema.prisma`. (001-project-scaffold)
+
+## Prisma Import Convention
+
+With Prisma 6's `prisma-client` generator and custom output path, import from the `client.ts` file directly:
+```typescript
+import { PrismaClient } from "../prisma/generated/client/client";
+```
+In app code, use the singleton from `@/lib/prisma`:
+```typescript
+import { prisma } from "@/lib/prisma";
+```
+
+## Recent Changes
+- 001-project-scaffold: Full Next.js 15 scaffold — dashboard shell with 8 pages, Prisma schema (Account, Source, Category), category seed data, multi-stage Dockerfile, docker-compose startup chain

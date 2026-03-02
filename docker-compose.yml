@@ -20,7 +20,7 @@ services:
     image: n8nio/n8n:latest
     restart: unless-stopped
     environment:
-      - N8N_HOST=localhost
+      - N8N_HOST=0.0.0.0
       - N8N_PORT=${N8N_PORT:-5678}
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=http://localhost:5678
@@ -45,7 +45,7 @@ services:
       MB_DB_TYPE: postgres
       MB_DB_HOST: postgres
       MB_DB_PORT: 5432
-      MB_DB_DBNAME: metabase
+      MB_DB_DBNAME: finance
       MB_DB_USER: ${POSTGRES_USER}
       MB_DB_PASS: ${POSTGRES_PASSWORD}
     volumes:
@@ -72,7 +72,7 @@ services:
              node server.js"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/finance
-      - METABASE_URL=http://localhost:${METABASE_PORT:-3001}
+      - METABASE_URL=http://metabase:3000
       - METABASE_SECRET_KEY=${METABASE_SECRET_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     ports:

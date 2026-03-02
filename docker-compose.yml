@@ -61,6 +61,10 @@ services:
       context: ./app
       dockerfile: Dockerfile
     restart: unless-stopped
+    command: >
+      sh -c "npx prisma db push --schema=./prisma/schema.prisma --skip-generate &&
+             npx prisma db seed &&
+             node server.js"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/finance
       - METABASE_URL=http://localhost:${METABASE_PORT:-3001}
@@ -74,8 +78,19 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./app
-          target: /app
+          path: ./app/app
+          target: /app/app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: sync
+          path: ./app/components
+          target: /app/components
+        - action: sync
+          path: ./app/lib
+          target: /app/lib
+        - action: rebuild
+          path: ./app/package.json
 
 volumes:
   postgres_data:

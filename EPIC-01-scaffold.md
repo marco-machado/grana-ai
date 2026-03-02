@@ -1,6 +1,6 @@
 # EPIC-01: Project Scaffold & App Shell
 
-**Status:** Not Started
+**Status:** Complete
 **Dependencies:** None (first epic)
 
 ## Overview
@@ -13,7 +13,7 @@ Bootstrap a running Next.js application inside Docker with a navigable dashboard
 - `package.json` — Next.js 15, React 19, Tailwind CSS 4, Prisma, TypeScript
 - `tsconfig.json` — strict mode, path aliases (`@/` → `app/`)
 - `next.config.ts`
-- `tailwind.config.ts` + `postcss.config.mjs`
+- `postcss.config.mjs`
 - `.eslintrc.json`
 
 ### Docker
@@ -23,7 +23,6 @@ Bootstrap a running Next.js application inside Docker with a navigable dashboard
 ### Prisma
 - `app/prisma/schema.prisma` — datasource, generator, enums (`AccountType`, `SourceType`), models: `Account`, `Source`, `Category`
 - `app/lib/prisma.ts` — singleton client (global caching for dev hot-reload)
-- Initial migration (`prisma migrate dev`)
 
 ### Seed Data
 - `app/prisma/seed.ts` — hierarchical category taxonomy:
@@ -52,7 +51,7 @@ Bootstrap a running Next.js application inside Docker with a navigable dashboard
 ### New Tables
 | Table | Key Fields |
 |-------|-----------|
-| `accounts` | id (UUID), name, type (checking/credit/savings), currency (default "BRL"), created_at, updated_at |
+| `accounts` | id (UUID), name, type (checking/credit/savings), created_at, updated_at |
 | `sources` | id (UUID), name, type (email/csv/api/manual), identifier, account_id (FK → accounts), created_at, updated_at |
 | `categories` | id (UUID), name, parent_id (self-ref FK, nullable), created_at |
 
@@ -79,7 +78,7 @@ Bootstrap a running Next.js application inside Docker with a navigable dashboard
 ## Architecture Notes
 
 - The `app/` directory is the Docker build context, matching the existing `docker-compose.yml` service definition (`build.context: ./app`).
-- Tailwind CSS 4 with CSS-based configuration (no JS config needed for v4, but we use `tailwind.config.ts` for theme extension).
+- Tailwind CSS 4 with CSS-first configuration via `@theme` block in `globals.css` (no JS config file needed in v4).
 - All models use UUID primary keys (`@default(uuid())`).
 - The `Category` model uses a self-referential `parent_id` for hierarchy — no closure table or nested set; simple one-level depth is sufficient for personal finance.
 - Timestamps: `created_at` and `updated_at` on mutable tables; `created_at` only on reference data (categories).

@@ -57,7 +57,7 @@ docker compose up
 - **`docker-compose.yml`** — Service definitions and dependencies.
 - **`env.example`** — Required environment variables.
 - **`app/prisma/schema.prisma`** — Database schema (Account, Source, Category models).
-- **`app/prisma/seed.ts`** — Idempotent category seed (~43 categories, Portuguese).
+- **`app/prisma/seed.ts`** — Idempotent category seed (45 categories: 10 parents + 35 children, Portuguese).
 - **`app/lib/prisma.ts`** — PrismaClient singleton (globalThis pattern for dev hot-reload).
 - **`app/components/Sidebar.tsx`** — Navigation sidebar with 8 sections.
 - **`app/app/(dashboard)/layout.tsx`** — Dashboard layout wrapping all pages.

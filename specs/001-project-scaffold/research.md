@@ -62,15 +62,16 @@
 
 ## Decision 5: Idempotent Seeding Strategy
 
-**Decision**: Use `createMany({ skipDuplicates: true })` with two-pass insertion (parents first, then children). Seed script runs at container startup.
+**Decision**: Use two-pass insertion: `findFirst + create` for parents, `upsert` for children. Seed script runs at container startup.
 
 **Rationale**:
-- `skipDuplicates: true` silently skips rows that violate unique constraints, making the seed fully idempotent.
+- `findFirst + create` for parents avoids duplicates while handling PostgreSQL's NULL-distinct behavior in the `@@unique([name, parent_id])` constraint.
+- `upsert` for children uses the compound unique key `name_parent_id` to skip existing records, making the seed fully idempotent.
 - Two-pass insertion ensures parent categories exist before children reference them via `parent_id`.
 - Running seed at startup (chained after schema push) ensures fresh databases always have reference data.
 
 **Alternatives considered**:
-- `upsert` loop — more flexible (can update existing records) but slower and more verbose. Not needed for static reference data.
+- `createMany({ skipDuplicates: true })` — cleaner but doesn't work reliably with the NULL parent_id uniqueness gap in PostgreSQL.
 - Single `createMany` with all rows — fails if children are inserted before their parents in the same batch (FK constraint).
 
 ## Decision 6: Docker Strategy

@@ -50,8 +50,8 @@ As a developer, I want the database to be pre-populated with a hierarchical cate
 **Acceptance Scenarios**:
 
 1. **Given** the database schema has been applied, **When** I run the seed command, **Then** approximately 10 top-level categories are created (Moradia, Alimentacao, Transporte, Saude, Educacao, Lazer, Servicos/Assinaturas, Vestuario, Financeiro, Renda).
-2. **Given** the seed command has run, **When** I query categories without a parent, **Then** I get approximately 10 results.
-3. **Given** the seed command has run, **When** I query categories with a parent, **Then** I get approximately 33 subcategories distributed across the top-level categories (e.g., Alimentacao has Supermercado, Restaurantes, Delivery, Padaria).
+2. **Given** the seed command has run, **When** I query categories without a parent, **Then** I get 10 results.
+3. **Given** the seed command has run, **When** I query categories with a parent, **Then** I get 35 subcategories distributed across the top-level categories (e.g., Alimentacao has Supermercado, Restaurantes, Delivery, Padaria).
 
 ---
 
@@ -85,21 +85,21 @@ As a developer, I want a shared database client singleton available for import t
 - **FR-003**: Sidebar MUST contain navigation links to exactly 8 sections: Overview, Transactions, Budgets, Recurring, Installments, Goals, Sources, and Insights.
 - **FR-004**: Each navigation link MUST route to a valid page that displays the section title — no broken links or 404 errors.
 - **FR-005**: System MUST connect to a PostgreSQL database and apply the schema automatically.
-- **FR-006**: Database MUST contain tables for accounts (with name, type, and currency), sources (with name, type, identifier, and account reference), and categories (with name and optional parent reference for hierarchy).
+- **FR-006**: Database MUST contain tables for accounts (with name and type), sources (with name, type, identifier, and account reference), and categories (with name and optional parent reference for hierarchy).
 - **FR-007**: Account types MUST be constrained to: checking, credit, and savings.
 - **FR-008**: Source types MUST be constrained to: email, CSV, API, and manual.
-- **FR-009**: System MUST provide a seed mechanism that populates approximately 10 top-level categories and approximately 33 subcategories for Brazilian personal finance.
+- **FR-009**: System MUST provide a seed mechanism that populates 10 top-level categories and 35 subcategories for Brazilian personal finance.
 - **FR-010**: Category taxonomy MUST be in Portuguese (e.g., Moradia, Alimentacao, Transporte).
 - **FR-011**: Seed mechanism MUST be idempotent — running it multiple times produces the same result without duplicates.
 - **FR-012**: System MUST provide a database client singleton importable from a standard path, with connection pooling that survives development hot-reloads without leaking connections.
 - **FR-013**: All database records MUST use UUID primary keys.
 - **FR-014**: Mutable tables MUST track creation and last-update timestamps. Reference data tables MUST track creation timestamp only.
 - **FR-015**: Category hierarchy MUST support exactly one level of nesting (parent to child, no deeper).
-- **FR-016**: Default currency for accounts MUST be "BRL".
+- **FR-016**: System is BRL-only. No currency field on Account — single currency is enforced by omission.
 
 ### Key Entities
 
-- **Account**: Represents a financial account (bank checking, credit card, savings). Has a name, type (checking/credit/savings), and currency (defaults to BRL).
+- **Account**: Represents a financial account (bank checking, credit card, savings). Has a name and type (checking/credit/savings). BRL-only — no currency field.
 - **Source**: Represents where transaction data comes from (email parsing, CSV upload, API sync, manual entry). Linked to an account. Has a name, type, and an identifier for the source system.
 - **Category**: Represents a spending or income classification. Organized hierarchically with a parent-child relationship (one level deep). Used throughout the application for transaction categorization, budgets, and insights.
 
@@ -109,7 +109,7 @@ As a developer, I want a shared database client singleton available for import t
 
 - **SC-001**: A developer can go from a fresh repository clone to a running application in under 5 minutes using a single startup command.
 - **SC-002**: All 8 navigation links in the sidebar are functional and render their respective pages without errors.
-- **SC-003**: The database contains approximately 10 top-level categories and approximately 33 subcategories after seeding.
+- **SC-003**: The database contains 10 top-level categories and 35 subcategories after seeding.
 - **SC-004**: The seed process is idempotent — running it 3 consecutive times produces the same category count as running it once.
 - **SC-005**: The database client can be imported and used to execute queries from any application module.
 - **SC-006**: The application builds and starts reliably on repeated restarts without manual intervention.

@@ -25,7 +25,6 @@ model Account {
   id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String
   type       AccountType
-  currency   String      @default("BRL")
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
   sources    Source[]
@@ -40,6 +39,8 @@ model Source {
   account    Account    @relation(fields: [account_id], references: [id])
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
+
+  @@unique([account_id, type, identifier])
 }
 
 model Category {

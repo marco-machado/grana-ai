@@ -82,17 +82,17 @@
 
 ## Phase 5: User Story 3 — Seed Reference Data (Priority: P2)
 
-**Goal**: Database is pre-populated with a hierarchical category taxonomy (~10 top-level, ~33 subcategories) for Brazilian personal finance in Portuguese
+**Goal**: Database is pre-populated with a hierarchical category taxonomy (10 top-level, 35 subcategories) for Brazilian personal finance in Portuguese
 
-**Independent Test**: Run `docker compose exec app npx prisma db seed`, then query the database: `SELECT count(*) FROM "Category" WHERE "parent_id" IS NULL` returns ~10, `SELECT count(*) FROM "Category" WHERE "parent_id" IS NOT NULL` returns ~33. Run seed again to verify idempotency (same counts).
+**Independent Test**: Run `docker compose exec app npx prisma db seed`, then query the database: `SELECT count(*) FROM "Category" WHERE "parent_id" IS NULL` returns 10, `SELECT count(*) FROM "Category" WHERE "parent_id" IS NOT NULL` returns 35. Run seed again to verify idempotency (same counts).
 
 ### Implementation for User Story 3
 
-- [x] T022 [US3] Create app/prisma/seed.ts with two-pass idempotent seeding (parents first via createMany with skipDuplicates, then children) for ~43 categories per data-model.md seed taxonomy
+- [x] T022 [US3] Create app/prisma/seed.ts with two-pass idempotent seeding (parents via findFirst+create, children via upsert) for 45 categories per data-model.md seed taxonomy
 - [x] T023 [US3] Add prisma.seed configuration to app/package.json pointing to tsx runner
 - [x] T024 [US3] Update docker-compose.yml command to include seed step: npx prisma db push && npx prisma db seed && node server.js
 
-**Checkpoint**: `docker compose up` seeds ~43 categories automatically. Running seed multiple times produces identical results (idempotent).
+**Checkpoint**: `docker compose up` seeds 45 categories automatically. Running seed multiple times produces identical results (idempotent).
 
 ---
 

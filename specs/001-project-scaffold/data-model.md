@@ -41,7 +41,6 @@ Represents a financial account (bank checking, credit card, savings).
 | `id` | UUID | PK, DB-generated (`gen_random_uuid()`) | FR-013 |
 | `name` | String | Required | e.g. "Nubank Credit" |
 | `type` | AccountType | Required, enum | FR-007 |
-| `currency` | String | Required, default `"BRL"` | FR-016, Constitution V (BRL only) |
 | `created_at` | DateTime | Required, auto-set | FR-014 |
 | `updated_at` | DateTime | Required, auto-updated | FR-014 (mutable table) |
 
@@ -50,7 +49,6 @@ Represents a financial account (bank checking, credit card, savings).
 
 **Validation rules**:
 - `name` must be non-empty
-- `currency` must be `"BRL"` (single currency, Constitution V)
 - `type` must be a valid `AccountType` enum value
 
 ### Source
@@ -98,7 +96,7 @@ Represents a spending or income classification. Hierarchical with one level of n
 
 ## Seed Data: Category Taxonomy
 
-~10 top-level categories, ~30 subcategories. All names in Portuguese (FR-010).
+10 top-level categories, 35 subcategories. All names in Portuguese (FR-010).
 
 | Top-level | Subcategories |
 |-----------|---------------|
@@ -113,7 +111,7 @@ Represents a spending or income classification. Hierarchical with one level of n
 | Financeiro | Investimentos, Taxas Bancarias, Seguros, Impostos |
 | Renda | Salario, Freelance, Rendimentos |
 
-**Total**: 10 top-level + 33 subcategories = 43 categories
+**Total**: 10 top-level + 35 subcategories = 45 categories
 
 ## Entity Relationship Diagram
 
@@ -124,7 +122,7 @@ Represents a spending or income classification. Hierarchical with one level of n
 │ id (PK)      │──┐    │ id (PK)      │
 │ name         │  │    │ name         │
 │ type         │  │    │ type         │
-│ currency     │  └───▶│ account_id   │
+│              │  └───▶│ account_id   │
 │ created_at   │       │ identifier   │
 │ updated_at   │       │ created_at   │
 └──────────────┘       │ updated_at   │

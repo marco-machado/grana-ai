@@ -17,7 +17,7 @@ Bootstrap the Grana AI application: a Next.js 15 dashboard shell running in Dock
 **Project Type**: Web application (dashboard)
 **Performance Goals**: N/A — single user, development simplicity prioritized.
 **Constraints**: Single user, BRL currency only, Docker Compose only, no authentication.
-**Scale/Scope**: 1 user, 8 pages (placeholders), 3 DB tables, ~43 seed categories.
+**Scale/Scope**: 1 user, 8 pages (placeholders), 3 DB tables, 45 seed categories.
 
 ## Constitution Check
 
@@ -28,7 +28,7 @@ Bootstrap the Grana AI application: a Next.js 15 dashboard shell running in Dock
 | I. Data Integrity First | Yes | PASS | UUID PKs, NUMERIC for amounts (prepared), category hierarchy via `parent_id` self-reference. `created_at`/`updated_at` per FR-014. |
 | II. Two-Layer UI Separation | Partial | PASS | Next.js is the write/interaction layer. No Metabase embedding in this epic (placeholder pages only). MetabaseEmbed component deferred to EPIC-10. |
 | III. AI-Assisted, Human-Verified | N/A | PASS | No AI features in this epic. |
-| IV. Idempotent Processing | Yes | PASS | Seed mechanism uses `createMany({ skipDuplicates: true })` — idempotent per FR-011. |
+| IV. Idempotent Processing | Yes | PASS | Seed mechanism uses `findFirst+create` for parents and `upsert` for children — idempotent per FR-011. |
 | V. Simplicity & Self-Hosting | Yes | PASS | Single user, no auth, BRL only, `docker compose up` starts everything. YAGNI applied — no speculative abstractions. |
 | Technology Constraints | Yes | PASS | PostgreSQL 17, Prisma ORM, Next.js App Router, Docker Compose. All match. |
 | Development Workflow | Yes | PASS | No auto-commit, no watch-mode tests, single-run `vitest run` when testing added later. |
@@ -40,7 +40,7 @@ Bootstrap the Grana AI application: a Next.js 15 dashboard shell running in Dock
 | Principle | Status | Notes |
 |-----------|--------|-------|
 | I. Data Integrity | PASS | Schema uses `@db.Uuid`, `@db.Decimal(12,2)` ready for amounts, `gen_random_uuid()` for DB-level generation. Category hierarchy one level deep. |
-| IV. Idempotent | PASS | Two-pass seed (parents, then children) with `skipDuplicates`. Safe to run on every container startup. |
+| IV. Idempotent | PASS | Two-pass seed (parents via `findFirst+create`, children via `upsert`). Safe to run on every container startup. |
 | V. Simplicity | PASS | No `tailwind.config.ts` (v4 CSS-first). Single Dockerfile with multi-stage. No unnecessary abstractions. |
 
 **Post-design gate**: PASS — no violations.
@@ -71,7 +71,7 @@ app/                          # Docker build context
 ├── postcss.config.mjs        # @tailwindcss/postcss
 ├── prisma/
 │   ├── schema.prisma         # Account, Source, Category models + enums
-│   └── seed.ts               # Hierarchical category taxonomy (~43 categories)
+│   └── seed.ts               # Hierarchical category taxonomy (45 categories)
 ├── lib/
 │   └── prisma.ts             # PrismaClient singleton (globalThis pattern)
 ├── app/                      # Next.js App Router
@@ -151,7 +151,6 @@ model Account {
   id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name       String
   type       AccountType
-  currency   String      @default("BRL")
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
   sources    Source[]

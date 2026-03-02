@@ -30,7 +30,7 @@ This command:
 1. Builds the Next.js app container (first run takes ~2 minutes)
 2. Starts PostgreSQL 17
 3. Applies the database schema automatically (`prisma db push`)
-4. Seeds category reference data (~43 categories)
+4. Seeds category reference data (45 categories: 10 parents + 35 children)
 5. Starts n8n and Metabase
 
 ### 3. Verify
@@ -84,10 +84,10 @@ docker compose exec postgres psql -U $POSTGRES_USER -d finance
 ### Verify seed data
 
 ```sql
--- Top-level categories (~10)
+-- Top-level categories (10)
 SELECT count(*) FROM "Category" WHERE "parent_id" IS NULL;
 
--- Subcategories (~33)
+-- Subcategories (35)
 SELECT count(*) FROM "Category" WHERE "parent_id" IS NOT NULL;
 
 -- All categories with hierarchy

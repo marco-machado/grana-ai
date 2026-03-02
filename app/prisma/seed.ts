@@ -73,7 +73,12 @@ async function main() {
   const parentMap = new Map(parents.map((p) => [p.name, p.id]));
 
   for (const cat of categories) {
-    const parentId = parentMap.get(cat.name)!;
+    const parentId = parentMap.get(cat.name);
+    if (!parentId) {
+      throw new Error(
+        `Parent category "${cat.name}" not found after creation. Check seed data integrity.`
+      );
+    }
     for (const childName of cat.children) {
       await prisma.category.upsert({
         where: { name_parent_id: { name: childName, parent_id: parentId } },

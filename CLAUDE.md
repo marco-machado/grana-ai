@@ -69,10 +69,6 @@ These items from SDD.md §5 are still unresolved:
 - Categorization rules engine (DB table vs config file)
 - Historical data ingestion strategy (first-run backlog processing)
 
-## Active Technologies
-- TypeScript 5.x (Node 22 Alpine) + Next.js 15, React 19, Tailwind CSS 4, Prisma ORM, `tsx` (seed runner) (001-project-scaffold)
-- PostgreSQL 17 (Docker), accessed via Prisma. Schema in `app/prisma/schema.prisma`. (001-project-scaffold)
-
 ## Prisma Import Convention
 
 With Prisma 6's `prisma-client` generator and custom output path, import from the `client.ts` file directly:
@@ -83,6 +79,3 @@ In app code, use the singleton from `@/lib/prisma`:
 ```typescript
 import { prisma } from "@/lib/prisma";
 ```
-
-## Recent Changes
-- 001-project-scaffold: Full Next.js 15 scaffold — dashboard shell with 8 pages, Prisma schema (Account, Source, Category), category seed data, multi-stage Dockerfile, docker-compose startup chain

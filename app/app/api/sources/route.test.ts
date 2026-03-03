@@ -62,7 +62,7 @@ describe("POST /api/sources", () => {
     expect(res.status).toBe(400);
 
     const json = await res.json();
-    expect(json.error.fields?.account_id).toContain("Account not found");
+    expect(json.error.fields?.account_id).toContain("Conta não encontrada");
   });
 
   it("returns 409 for duplicate (account_id, type, identifier)", async () => {
@@ -81,7 +81,7 @@ describe("POST /api/sources", () => {
     expect(res.status).toBe(409);
 
     const json = await res.json();
-    expect(json.error.message).toContain("already exists");
+    expect(json.error.message).toContain("Já existe");
   });
 });
 

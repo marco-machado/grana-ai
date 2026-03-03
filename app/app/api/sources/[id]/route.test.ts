@@ -66,7 +66,7 @@ describe("GET /api/sources/[id]", () => {
 
     const json = await res.json();
     expect(json.data).toBeNull();
-    expect(json.error.message).toBe("Source not found");
+    expect(json.error.message).toBe("Fonte não encontrada");
   });
 });
 
@@ -109,7 +109,7 @@ describe("PATCH /api/sources/[id]", () => {
     expect(res.status).toBe(400);
 
     const json = await res.json();
-    expect(json.error.fields?.account_id).toContain("Account not found");
+    expect(json.error.fields?.account_id).toContain("Conta não encontrada");
   });
 
   it("returns 404 for non-existent UUID", async () => {
@@ -120,7 +120,7 @@ describe("PATCH /api/sources/[id]", () => {
     expect(res.status).toBe(404);
 
     const json = await res.json();
-    expect(json.error.message).toBe("Source not found");
+    expect(json.error.message).toBe("Fonte não encontrada");
   });
 
   it("returns 409 on unique constraint violation", async () => {
@@ -151,7 +151,7 @@ describe("PATCH /api/sources/[id]", () => {
     expect(res.status).toBe(409);
 
     const json = await res.json();
-    expect(json.error.message).toContain("already exists");
+    expect(json.error.message).toContain("Já existe");
   });
 });
 
@@ -176,6 +176,6 @@ describe("DELETE /api/sources/[id]", () => {
     expect(res.status).toBe(404);
 
     const json = await res.json();
-    expect(json.error.message).toBe("Source not found");
+    expect(json.error.message).toBe("Fonte não encontrada");
   });
 });

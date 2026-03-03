@@ -9,18 +9,18 @@ export const sourceBaseSchema = z.object({
 
 export const createSourceSchema = sourceBaseSchema.superRefine((data, ctx) => {
   if (data.type === "EMAIL" && !z.email().safeParse(data.identifier).success) {
-    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Must be a valid email for EMAIL sources" });
+    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Deve ser um e-mail válido para fontes do tipo EMAIL" });
   }
   if (data.type === "API" && !z.url().safeParse(data.identifier).success) {
-    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Must be a valid URL for API sources" });
+    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Deve ser uma URL válida para fontes do tipo API" });
   }
 });
 
 export const updateSourceSchema = sourceBaseSchema.partial().superRefine((data, ctx) => {
   if (data.type === "EMAIL" && data.identifier && !z.email().safeParse(data.identifier).success) {
-    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Must be a valid email for EMAIL sources" });
+    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Deve ser um e-mail válido para fontes do tipo EMAIL" });
   }
   if (data.type === "API" && data.identifier && !z.url().safeParse(data.identifier).success) {
-    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Must be a valid URL for API sources" });
+    ctx.addIssue({ code: "custom", path: ["identifier"], message: "Deve ser uma URL válida para fontes do tipo API" });
   }
 });

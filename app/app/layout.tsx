@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Grana AI",
-  description: "Personal finance dashboard",
+  description: "Painel de finanças pessoais",
 };
 
 export default function RootLayout({

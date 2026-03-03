@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/", label: "Overview" },
-  { href: "/transactions", label: "Transactions" },
-  { href: "/budgets", label: "Budgets" },
-  { href: "/recurring", label: "Recurring" },
-  { href: "/installments", label: "Installments" },
-  { href: "/goals", label: "Goals" },
-  { href: "/sources", label: "Sources" },
-  { href: "/insights", label: "Insights" },
+  { href: "/", label: "Visão Geral" },
+  { href: "/transactions", label: "Transações" },
+  { href: "/budgets", label: "Orçamentos" },
+  { href: "/recurring", label: "Recorrentes" },
+  { href: "/installments", label: "Parcelas" },
+  { href: "/goals", label: "Metas" },
+  { href: "/sources", label: "Fontes" },
+  { href: "/insights", label: "Análises" },
 ];
 
 export default function Sidebar() {

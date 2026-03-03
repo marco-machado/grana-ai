@@ -9,12 +9,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) return notFound("Source not found");
+  if (!z.uuid().safeParse(id).success) return notFound("Fonte não encontrada");
   const source = await prisma.source.findUnique({
     where: { id },
     include: { account: { select: { id: true, name: true } } },
   });
-  if (!source) return notFound("Source not found");
+  if (!source) return notFound("Fonte não encontrada");
   return ok(source);
 }
 
@@ -23,7 +23,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) return notFound("Source not found");
+  if (!z.uuid().safeParse(id).success) return notFound("Fonte não encontrada");
   const [body, error] = await parseJson(request);
   if (error) return error;
   const result = updateSourceSchema.safeParse(body);
@@ -34,8 +34,8 @@ export async function PATCH(
       where: { id: result.data.account_id },
     });
     if (!account) {
-      return badRequest("Validation failed", {
-        account_id: ["Account not found"],
+      return badRequest("Falha na validação", {
+        account_id: ["Conta não encontrada"],
       });
     }
   }
@@ -49,10 +49,10 @@ export async function PATCH(
     return ok(source);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") return notFound("Source not found");
+      if (error.code === "P2025") return notFound("Fonte não encontrada");
       if (error.code === "P2002") {
         return conflict(
-          "A source with this account, type, and identifier already exists"
+          "Já existe uma fonte com esta conta, tipo e identificador"
         );
       }
     }
@@ -65,9 +65,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) return notFound("Source not found");
+  if (!z.uuid().safeParse(id).success) return notFound("Fonte não encontrada");
   const source = await prisma.source.findUnique({ where: { id } });
-  if (!source) return notFound("Source not found");
+  if (!source) return notFound("Fonte não encontrada");
 
   const [transactions, staging, statements] = await Promise.all([
     prisma.transaction.count({ where: { source_id: id } }),
@@ -77,7 +77,7 @@ export async function DELETE(
   const total = transactions + staging + statements;
   if (total > 0) {
     return conflict(
-      `Cannot delete source: ${total} linked record(s) still reference it. Remove linked transactions, staging records, and processed statements first.`
+      `Não é possível excluir a fonte: ${total} registro(s) vinculado(s) ainda a referenciam. Remova transações, registros temporários e extratos processados primeiro.`
     );
   }
 
@@ -85,10 +85,10 @@ export async function DELETE(
     await prisma.source.delete({ where: { id } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") return notFound("Source not found");
+      if (error.code === "P2025") return notFound("Fonte não encontrada");
       if (error.code === "P2003")
         return conflict(
-          "Cannot delete source: linked records were added concurrently"
+          "Não é possível excluir a fonte: registros vinculados foram adicionados simultaneamente"
         );
     }
     throw error;

@@ -67,11 +67,12 @@ export async function DELETE(
   try {
     await prisma.account.delete({ where: { id } });
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2025"
-    ) {
-      return notFound("Account not found");
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") return notFound("Account not found");
+      if (error.code === "P2003")
+        return conflict(
+          "Cannot delete account: linked records were added concurrently"
+        );
     }
     throw error;
   }

@@ -126,7 +126,7 @@ describe("DELETE /api/accounts/[id]", () => {
     expect(res.status).toBe(409);
 
     const json = await res.json();
-    expect(json.error.message).toContain("1 source(s) still reference it");
+    expect(json.error.message).toContain("linked record(s) still reference it");
   });
 
   it("returns 404 for non-existent UUID", async () => {

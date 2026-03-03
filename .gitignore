@@ -33,3 +33,8 @@ Thumbs.db
 
 # Docker
 *.pid
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/

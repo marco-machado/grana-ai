@@ -9,7 +9,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    exclude: ["node_modules", "prisma/generated"],
+    exclude: ["node_modules", "prisma/generated", "e2e"],
     setupFiles: ["./test/setup.ts"],
     passWithNoTests: true,
     fileParallelism: false,

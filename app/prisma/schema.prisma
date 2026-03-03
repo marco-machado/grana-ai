@@ -21,35 +21,94 @@ enum SourceType {
   MANUAL
 }
 
+enum StagingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Account {
-  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String
-  type       AccountType
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
-  sources    Source[]
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String
+  type                 AccountType
+  created_at           DateTime             @default(now())
+  updated_at           DateTime             @updatedAt
+  sources              Source[]
+  transactions         Transaction[]
+  staging_transactions StagingTransaction[]
 }
 
 model Source {
-  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String
-  type       SourceType
-  identifier String
-  account_id String     @db.Uuid
-  account    Account    @relation(fields: [account_id], references: [id])
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String
+  type                 SourceType
+  identifier           String
+  account_id           String               @db.Uuid
+  account              Account              @relation(fields: [account_id], references: [id])
+  created_at           DateTime             @default(now())
+  updated_at           DateTime             @updatedAt
+  transactions         Transaction[]
+  staging_transactions StagingTransaction[]
+  processed_statements ProcessedStatement[]
 
   @@unique([account_id, type, identifier])
 }
 
 model Category {
-  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String
-  parent_id  String?    @db.Uuid
-  parent     Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
-  children   Category[] @relation("CategoryHierarchy")
-  created_at DateTime   @default(now())
+  id                   String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String
+  parent_id            String?              @db.Uuid
+  parent               Category?            @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  children             Category[]           @relation("CategoryHierarchy")
+  created_at           DateTime             @default(now())
+  transactions         Transaction[]
+  staging_transactions StagingTransaction[]
 
   @@unique([name, parent_id])
+}
+
+model Transaction {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date              DateTime  @db.Date
+  description_raw   String
+  description_clean String
+  amount            Decimal   @db.Decimal(12, 2)
+  account_id        String    @db.Uuid
+  account           Account   @relation(fields: [account_id], references: [id])
+  source_id         String    @db.Uuid
+  source            Source    @relation(fields: [source_id], references: [id])
+  category_id       String?   @db.Uuid
+  category          Category? @relation(fields: [category_id], references: [id])
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  @@unique([account_id, date, amount, description_raw])
+}
+
+model StagingTransaction {
+  id                  String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  date                DateTime      @db.Date
+  description_raw     String
+  description_clean   String
+  amount              Decimal       @db.Decimal(12, 2)
+  account_id          String        @db.Uuid
+  account             Account       @relation(fields: [account_id], references: [id])
+  source_id           String        @db.Uuid
+  source              Source        @relation(fields: [source_id], references: [id])
+  category_id         String?       @db.Uuid
+  category            Category?     @relation(fields: [category_id], references: [id])
+  category_suggestion String?
+  confidence_score    Decimal?      @db.Decimal(3, 2)
+  status              StagingStatus @default(PENDING)
+  statement_hash      String
+  created_at          DateTime      @default(now())
+  updated_at          DateTime      @updatedAt
+}
+
+model ProcessedStatement {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  source_id      String   @db.Uuid
+  source         Source   @relation(fields: [source_id], references: [id])
+  statement_hash String   @unique
+  processed_at   DateTime @default(now())
 }

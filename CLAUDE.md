@@ -65,7 +65,6 @@ docker compose up
 ## Open Design Decisions
 
 These items from SDD.md §5 are still unresolved:
-- Staging table schema (temporary storage before promotion to `transactions`)
 - Categorization rules engine (DB table vs config file)
 - Historical data ingestion strategy (first-run backlog processing)
 
@@ -79,3 +78,14 @@ In app code, use the singleton from `@/lib/prisma`:
 ```typescript
 import { prisma } from "@/lib/prisma";
 ```
+
+## API Conventions
+
+- **Response envelope**: All endpoints return `{ data: T | null, error: { message, fields? } | null }` via helpers in `app/lib/api.ts`
+- **Validation**: Zod v4 schemas in `app/lib/schemas/`. Use `z.flattenError()` (not deprecated `error.flatten()`) for field-level errors.
+- **Route handlers**: Use `Response.json()` (Web Standard), not `NextResponse.json()`. Params are `Promise` in Next.js 15 — always `await params`.
+- **Testing**: Vitest single-run (`npx vitest run`). Tests import route handlers directly. Real `finance_test` database, no mocks for Prisma. `fileParallelism: false` in vitest config.
+
+## Recent Changes
+- 001-project-scaffold: Full Next.js 15 scaffold — dashboard shell with 8 pages, Prisma schema (Account, Source, Category), category seed data, multi-stage Dockerfile, docker-compose startup chain
+- 002-data-model-sources: Transaction/StagingTransaction/ProcessedStatement models, Account & Source CRUD REST APIs with Zod validation, Sources management UI page, Vitest test suite (58 tests)

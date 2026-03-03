@@ -27,10 +27,10 @@
 
 **Purpose**: Install new dependencies and configure testing framework
 
-- [ ] T001 Install Zod and Vitest dependencies in `app/package.json` (`zod` as dependency, `vitest` as devDependency)
-- [ ] T002 Create Vitest configuration file at `app/vitest.config.ts` per plan.md (resolve `@/` alias to `app/`, exclude node_modules and generated)
-- [ ] T003 [P] Create test setup file at `app/test/setup.ts` (set DATABASE_URL to finance_test, globalSetup for Prisma migrate, beforeEach cleanup via deleteMany)
-- [ ] T004 [P] Add `test:run` script to `app/package.json` (`vitest run`)
+- [x] T001 Install Zod and Vitest dependencies in `app/package.json` (`zod` as dependency, `vitest` as devDependency)
+- [x] T002 Create Vitest configuration file at `app/vitest.config.ts` per plan.md (resolve `@/` alias to `app/`, exclude node_modules and generated)
+- [x] T003 [P] Create test setup file at `app/test/setup.ts` (set DATABASE_URL to finance_test, globalSetup for Prisma migrate, beforeEach cleanup via deleteMany)
+- [x] T004 [P] Add `test:run` script to `app/package.json` (`vitest run`)
 
 ---
 
@@ -40,11 +40,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T005 Extend Prisma schema at `app/prisma/schema.prisma`: add `StagingStatus` enum, `Transaction`, `StagingTransaction`, `ProcessedStatement` models, and back-relations on `Account`, `Source`, `Category` per data-model.md
-- [ ] T006 Generate Prisma migration for the new schema (`npx prisma migrate dev --name add_transactions_staging`)
-- [ ] T007 [P] Create API response envelope helpers in `app/lib/api.ts` with `ok()`, `created()`, `badRequest()`, `notFound()`, `conflict()` functions returning `{ data, error }` shape per contracts/api.md
-- [ ] T008 [P] Create account Zod validation schemas in `app/lib/schemas/account.ts` (createAccountSchema: name required non-empty max 255, type enum CHECKING/CREDIT/SAVINGS; updateAccountSchema: all fields optional with same validation)
-- [ ] T009 [P] Create source Zod validation schemas in `app/lib/schemas/source.ts` (createSourceSchema: name required non-empty max 255, type enum EMAIL/CSV/API/MANUAL, identifier required non-empty max 500, account_id required UUID; updateSourceSchema: all fields optional with same validation)
+- [x] T005 Extend Prisma schema at `app/prisma/schema.prisma`: add `StagingStatus` enum, `Transaction`, `StagingTransaction`, `ProcessedStatement` models, and back-relations on `Account`, `Source`, `Category` per data-model.md
+- [x] T006 Generate Prisma migration for the new schema (`npx prisma migrate dev --name add_transactions_staging`)
+- [x] T007 [P] Create API response envelope helpers in `app/lib/api.ts` with `ok()`, `created()`, `badRequest()`, `notFound()`, `conflict()` functions returning `{ data, error }` shape per contracts/api.md
+- [x] T008 [P] Create account Zod validation schemas in `app/lib/schemas/account.ts` (createAccountSchema: name required non-empty max 255, type enum CHECKING/CREDIT/SAVINGS; updateAccountSchema: all fields optional with same validation)
+- [x] T009 [P] Create source Zod validation schemas in `app/lib/schemas/source.ts` (createSourceSchema: name required non-empty max 255, type enum EMAIL/CSV/API/MANUAL, identifier required non-empty max 500, account_id required UUID; updateSourceSchema: all fields optional with same validation)
 
 **Checkpoint**: Schema migrated, Prisma client regenerated, API helpers and validation schemas ready
 
@@ -58,14 +58,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Implement `GET` (list all) and `POST` (create) route handlers in `app/app/api/accounts/route.ts` — POST validates with createAccountSchema, returns 201 with envelope; GET returns array with envelope
-- [ ] T011 [US1] Implement `GET` (single), `PATCH` (update), and `DELETE` route handlers in `app/app/api/accounts/[id]/route.ts` — PATCH validates with updateAccountSchema; DELETE checks source count and returns 409 if sources exist, 200 if clean; all return 404 for missing account
+- [x] T010 [US1] Implement `GET` (list all) and `POST` (create) route handlers in `app/app/api/accounts/route.ts` — POST validates with createAccountSchema, returns 201 with envelope; GET returns array with envelope
+- [x] T011 [US1] Implement `GET` (single), `PATCH` (update), and `DELETE` route handlers in `app/app/api/accounts/[id]/route.ts` — PATCH validates with updateAccountSchema; DELETE checks source count and returns 409 if sources exist, 200 if clean; all return 404 for missing account
 
 ### Tests for User Story 1
 
-- [ ] T012 [P] [US1] Test account Zod schemas in `app/lib/schemas/account.test.ts` — valid create/update payloads pass, missing name rejects, empty name rejects, invalid type rejects, max length 255 enforced, update allows partial fields
-- [ ] T013 [P] [US1] Test account collection routes in `app/app/api/accounts/route.test.ts` — POST returns 201 with created account, POST with invalid body returns 400 with per-field errors, GET returns array of all accounts in envelope
-- [ ] T014 [US1] Test account resource routes in `app/app/api/accounts/[id]/route.test.ts` — GET returns single account or 404, PATCH updates and returns 200 or 400/404, DELETE returns 200 when no sources or 409 with count message when sources exist, DELETE returns 404 for missing account
+- [x] T012 [P] [US1] Test account Zod schemas in `app/lib/schemas/account.test.ts` — valid create/update payloads pass, missing name rejects, empty name rejects, invalid type rejects, max length 255 enforced, update allows partial fields
+- [x] T013 [P] [US1] Test account collection routes in `app/app/api/accounts/route.test.ts` — POST returns 201 with created account, POST with invalid body returns 400 with per-field errors, GET returns array of all accounts in envelope
+- [x] T014 [US1] Test account resource routes in `app/app/api/accounts/[id]/route.test.ts` — GET returns single account or 404, PATCH updates and returns 200 or 400/404, DELETE returns 200 when no sources or 409 with count message when sources exist, DELETE returns 404 for missing account
 
 **Checkpoint**: Account CRUD API fully functional and tested
 
@@ -79,14 +79,14 @@
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Implement `GET` (list all with account include) and `POST` (create) route handlers in `app/app/api/sources/route.ts` — POST validates with createSourceSchema, verifies account exists, catches unique constraint violation (P2002) for 409; GET uses `include: { account: { select: { id, name } } }`
-- [ ] T016 [US2] Implement `GET` (single), `PATCH` (update), and `DELETE` route handlers in `app/app/api/sources/[id]/route.ts` — PATCH validates with updateSourceSchema, verifies account exists if account_id provided, catches unique constraint; all return 404 for missing source; responses include account info
+- [x] T015 [US2] Implement `GET` (list all with account include) and `POST` (create) route handlers in `app/app/api/sources/route.ts` — POST validates with createSourceSchema, verifies account exists, catches unique constraint violation (P2002) for 409; GET uses `include: { account: { select: { id, name } } }`
+- [x] T016 [US2] Implement `GET` (single), `PATCH` (update), and `DELETE` route handlers in `app/app/api/sources/[id]/route.ts` — PATCH validates with updateSourceSchema, verifies account exists if account_id provided, catches unique constraint; all return 404 for missing source; responses include account info
 
 ### Tests for User Story 2
 
-- [ ] T017 [P] [US2] Test source Zod schemas in `app/lib/schemas/source.test.ts` — valid create/update payloads pass, missing required fields reject with per-field errors, invalid type rejects, invalid UUID for account_id rejects, max length enforced (name 255, identifier 500), update allows partial fields
-- [ ] T018 [P] [US2] Test source collection routes in `app/app/api/sources/route.test.ts` — POST returns 201 with source including account info, POST with missing fields returns 400, POST with non-existent account_id returns 400, POST with duplicate (account_id, type, identifier) returns 409, GET returns array with account `{ id, name }` included
-- [ ] T019 [US2] Test source resource routes in `app/app/api/sources/[id]/route.test.ts` — GET returns single source with account info or 404, PATCH updates and returns 200 with account info or 400/404/409, DELETE returns 200 or 404
+- [x] T017 [P] [US2] Test source Zod schemas in `app/lib/schemas/source.test.ts` — valid create/update payloads pass, missing required fields reject with per-field errors, invalid type rejects, invalid UUID for account_id rejects, max length enforced (name 255, identifier 500), update allows partial fields
+- [x] T018 [P] [US2] Test source collection routes in `app/app/api/sources/route.test.ts` — POST returns 201 with source including account info, POST with missing fields returns 400, POST with non-existent account_id returns 400, POST with duplicate (account_id, type, identifier) returns 409, GET returns array with account `{ id, name }` included
+- [x] T019 [US2] Test source resource routes in `app/app/api/sources/[id]/route.test.ts` — GET returns single source with account info or 404, PATCH updates and returns 200 with account info or 400/404/409, DELETE returns 200 or 404
 
 **Checkpoint**: Source CRUD API fully functional and tested. Sources include linked account names.
 
@@ -100,8 +100,8 @@
 
 ### Implementation for User Story 4
 
-- [ ] T020 [US4] Verify Prisma schema correctness: confirm Transaction `@@unique([account_id, date, amount, description_raw])` constraint, StagingTransaction `status @default(PENDING)`, ProcessedStatement `statement_hash @unique` are all present in `app/prisma/schema.prisma` and migration applied cleanly
-- [ ] T020b [US4] Integration test for transaction schema constraints in `app/prisma/schema.test.ts` — verify: inserting duplicate (account_id, date, amount, description_raw) does not increase row count (dedup), StagingTransaction inserts default to PENDING status, duplicate ProcessedStatement.statement_hash is rejected. Runs against real finance_test database.
+- [x] T020 [US4] Verify Prisma schema correctness: confirm Transaction `@@unique([account_id, date, amount, description_raw])` constraint, StagingTransaction `status @default(PENDING)`, ProcessedStatement `statement_hash @unique` are all present in `app/prisma/schema.prisma` and migration applied cleanly
+- [x] T020b [US4] Integration test for transaction schema constraints in `app/prisma/schema.test.ts` — verify: inserting duplicate (account_id, date, amount, description_raw) does not increase row count (dedup), StagingTransaction inserts default to PENDING status, duplicate ProcessedStatement.statement_hash is rejected. Runs against real finance_test database.
 
 **Checkpoint**: All three new tables exist with correct constraints, verified at runtime. Schema is ready for future ingestion pipeline (EPIC-03+).
 
@@ -115,9 +115,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T021 [P] [US3] Create `AccountList` component in `app/components/AccountList.tsx` — client component with account list display, inline add form (name + type dropdown), edit/delete actions, calls `/api/accounts` endpoints, loading/empty/error states per constitution VIII
-- [ ] T022 [P] [US3] Create `SourceList` component in `app/components/SourceList.tsx` — client component with source list (showing account names), creation form (name, type dropdown, identifier, account dropdown), delete action, calls `/api/sources` endpoints, loading/empty/error states
-- [ ] T023 [US3] Implement Sources page in `app/app/(dashboard)/sources/page.tsx` — client component composing `AccountList` and `SourceList`, fetches accounts on mount for the source form's account dropdown, re-fetches after mutations, pt-BR labels
+- [x] T021 [P] [US3] Create `AccountList` component in `app/components/AccountList.tsx` — client component with account list display, inline add form (name + type dropdown), edit/delete actions, calls `/api/accounts` endpoints, loading/empty/error states per constitution VIII
+- [x] T022 [P] [US3] Create `SourceList` component in `app/components/SourceList.tsx` — client component with source list (showing account names), creation form (name, type dropdown, identifier, account dropdown), delete action, calls `/api/sources` endpoints, loading/empty/error states
+- [x] T023 [US3] Implement Sources page in `app/app/(dashboard)/sources/page.tsx` — client component composing `AccountList` and `SourceList`, fetches accounts on mount for the source form's account dropdown, re-fetches after mutations, pt-BR labels
 
 **Checkpoint**: Sources page fully functional at `/sources` — user can manage accounts and sources visually
 
@@ -127,8 +127,8 @@
 
 **Purpose**: Validation, cleanup, and verification across all stories
 
-- [ ] T024 Run quickstart.md verification checklist — confirm migration, all CRUD endpoints, UI, and response envelope consistency
-- [ ] T025 Update `CLAUDE.md` "Recent Changes" and "Active Technologies" sections to reflect 002-data-model-sources additions (Zod, Vitest)
+- [x] T024 Run quickstart.md verification checklist — confirm migration, all CRUD endpoints, UI, and response envelope consistency
+- [x] T025 Update `CLAUDE.md` "Recent Changes" and "Active Technologies" sections to reflect 002-data-model-sources additions (Zod, Vitest)
 
 ---
 

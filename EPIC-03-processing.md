@@ -18,21 +18,19 @@ Build the core processing endpoint that receives raw bank statement content, par
 - Flow: hash content → check `processed_statements` → parse with Claude → bulk insert into `staging_transactions` → record in `processed_statements`
 
 ### Claude API Service
-- `app/lib/claude.ts` — Anthropic SDK client singleton
-- `app/lib/statement-parser.ts`:
-  - Prompt template for statement parsing (instructs Claude to extract date, description_raw, description_clean, amount, category_suggestion, confidence)
-  - Response schema validation (Zod)
+- `app/lib/ai/client.ts` — Anthropic SDK singleton + model constant
+- `app/lib/ai/schema.ts` — Zod schema for Claude structured output (zodOutputFormat)
+- `app/lib/ai/parse-statement.ts` — Prompt template and AI parsing logic
+- `app/lib/ai/taxonomy.ts` — Category taxonomy loader for AI prompt context
+
+### Processing Orchestration
+- `app/lib/statement-processor.ts` — Core pipeline orchestration:
+  - Hash content (SHA-256), check dedup, call AI parser, validate response, resolve categories, bulk insert staging
   - Handles both single-statement and batch modes
   - Error handling for API failures, malformed responses, token limits
 
-### Deduplication
-- `app/lib/dedup.ts`:
-  - `computeStatementHash(content: string): string` — SHA-256
-  - `isAlreadyProcessed(hash: string, sourceId: string): Promise<boolean>` — checks `processed_statements`
-  - `recordProcessed(sourceId: string, hash: string): Promise<void>` — inserts into `processed_statements`
-
 ### Manual Upload UI
-- `app/app/(dashboard)/sources/upload/page.tsx` — Manual statement upload page:
+- `app/app/(dashboard)/upload/page.tsx` — Manual statement upload page:
   - Account + source selector dropdowns
   - Drag-and-drop zone for PDF/text files
   - Text area for pasting raw statement content
@@ -48,7 +46,7 @@ Build the core processing endpoint that receives raw bank statement content, par
 
 ## Database Changes
 
-No new tables — uses `staging_transactions` and `processed_statements` from EPIC-02.
+Includes Prisma schema migration for Transaction, StagingTransaction, ProcessedStatement, and StagingStatus enum. These tables were originally scoped to EPIC-02 but are incorporated here since EPIC-02 is not yet implemented and the processing pipeline requires them. See `specs/003-statement-processing/research.md` R-001 for rationale.
 
 ## Open Decisions Resolved
 

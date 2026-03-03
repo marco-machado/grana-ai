@@ -91,6 +91,10 @@ import { prisma } from "@/lib/prisma";
 - **Running tests locally**: Requires `DATABASE_URL` env var — e.g. `DATABASE_URL="postgresql://finance_user:localdev123@localhost:5433/finance" npx vitest run`. Test setup auto-derives `finance_test` DB from this URL.
 - **Prisma dangerous operations**: Claude Code triggers Prisma's AI safety check. Test setup already sets `PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION`; for manual `db push` commands, it must be passed explicitly.
 
+## Git Workflow
+
+- **PR merge strategy**: Use merge commits (`--merge`), not squash. Squash merges are disabled on this repo.
+
 ## Recent Changes
 - 001-project-scaffold: Full Next.js 15 scaffold — dashboard shell with 8 pages, Prisma schema (Account, Source, Category), category seed data, multi-stage Dockerfile, docker-compose startup chain
 - 002-data-model-sources: Transaction/StagingTransaction/ProcessedStatement models, Account & Source CRUD REST APIs with Zod validation, Sources management UI page, Vitest test suite (58 tests)

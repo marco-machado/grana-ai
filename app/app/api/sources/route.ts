@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { ok, created, badRequest, conflict, fromZodError } from "@/lib/api";
+import { ok, created, badRequest, conflict, fromZodError, parseJson } from "@/lib/api";
 import { createSourceSchema } from "@/lib/schemas/source";
 import { Prisma } from "@/prisma/generated/client/client";
 
@@ -12,7 +12,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  const [body, error] = await parseJson(request);
+  if (error) return error;
   const result = createSourceSchema.safeParse(body);
   if (!result.success) return fromZodError(result.error);
 

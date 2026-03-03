@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createAccountSchema, updateAccountSchema } from "./account";
+import { AccountType } from "@/prisma/generated/client/client";
 
 describe("createAccountSchema", () => {
   it("accepts a valid payload", () => {
@@ -49,6 +50,14 @@ describe("createAccountSchema", () => {
       const result = createAccountSchema.safeParse({ name: "Test", type });
       expect(result.success).toBe(true);
     }
+  });
+});
+
+describe("enum sync", () => {
+  it("covers all Prisma AccountType values", () => {
+    const prismaValues = Object.values(AccountType);
+    const zodValues = createAccountSchema.shape.type.options;
+    expect(new Set(zodValues)).toEqual(new Set(prismaValues));
   });
 });
 

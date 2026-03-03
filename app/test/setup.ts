@@ -16,6 +16,7 @@ const TABLES_IN_DELETE_ORDER = [
   "Transaction",
   "Source",
   "Account",
+  "Category",
 ];
 
 beforeAll(async () => {
@@ -34,8 +35,11 @@ beforeEach(async () => {
   for (const table of TABLES_IN_DELETE_ORDER) {
     try {
       await prisma.$executeRawUnsafe(`DELETE FROM "${table}"`);
-    } catch {
-      // Table doesn't exist yet — skip
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      if (!msg.includes("does not exist") && !msg.includes("relation")) {
+        throw error;
+      }
     }
   }
 });

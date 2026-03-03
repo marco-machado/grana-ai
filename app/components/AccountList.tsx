@@ -44,7 +44,7 @@ export default function AccountList({ accounts, onMutate }: AccountListProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  async function handleAdd(e: React.FormEvent<HTMLFormElement>) {
+  async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
@@ -65,7 +65,8 @@ export default function AccountList({ accounts, onMutate }: AccountListProps) {
       setName("");
       setType("CHECKING");
       onMutate();
-    } catch {
+    } catch (error) {
+      console.error("Failed to create account:", error);
       setError("Erro de conexão ao criar conta");
     } finally {
       setSubmitting(false);
@@ -84,7 +85,7 @@ export default function AccountList({ accounts, onMutate }: AccountListProps) {
     setEditError(null);
   }
 
-  async function handleEdit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingId) return;
     setEditError(null);
@@ -105,7 +106,8 @@ export default function AccountList({ accounts, onMutate }: AccountListProps) {
 
       setEditingId(null);
       onMutate();
-    } catch {
+    } catch (error) {
+      console.error("Failed to update account:", error);
       setEditError("Erro de conexão ao atualizar conta");
     } finally {
       setEditSubmitting(false);
@@ -128,7 +130,8 @@ export default function AccountList({ accounts, onMutate }: AccountListProps) {
       }
 
       onMutate();
-    } catch {
+    } catch (error) {
+      console.error("Failed to delete account:", error);
       setDeleteError("Erro de conexão ao excluir conta");
     } finally {
       setDeletingId(null);

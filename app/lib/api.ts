@@ -23,6 +23,13 @@ function conflict(message: string): Response {
   return Response.json({ data: null, error: { message } } satisfies ApiError, { status: 409 });
 }
 
+function serverError(message = "Internal server error"): Response {
+  return Response.json(
+    { data: null, error: { message } } satisfies ApiError,
+    { status: 500 }
+  );
+}
+
 function fromZodError(error: ZodError): Response {
   const flat = z.flattenError(error);
   const fields: Record<string, string[]> = {};
@@ -34,4 +41,13 @@ function fromZodError(error: ZodError): Response {
   return badRequest("Validation failed", fields);
 }
 
-export { ok, created, badRequest, notFound, conflict, fromZodError };
+async function parseJson(request: Request): Promise<[unknown, null] | [null, Response]> {
+  try {
+    const body = await request.json();
+    return [body, null];
+  } catch {
+    return [null, badRequest("Invalid JSON in request body")];
+  }
+}
+
+export { ok, created, badRequest, notFound, conflict, serverError, fromZodError, parseJson };

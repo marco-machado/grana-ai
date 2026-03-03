@@ -58,9 +58,10 @@ export default function SourcesPage() {
         sourcesRes.json(),
       ]);
 
-      setAccounts(accountsJson.data);
-      setSources(sourcesJson.data);
-    } catch {
+      setAccounts(accountsJson.data ?? []);
+      setSources(sourcesJson.data ?? []);
+    } catch (error) {
+      console.error("Failed to fetch sources page data:", error);
       setError("Erro de conexão. Verifique sua rede e tente novamente.");
     } finally {
       setLoading(false);

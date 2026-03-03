@@ -82,7 +82,8 @@ export default function SourceList({ sources, accounts, onMutate }: SourceListPr
       setIdentifier("");
       setAccountId("");
       onMutate();
-    } catch {
+    } catch (error) {
+      console.error("Failed to create source:", error);
       setError("Erro de conexão ao criar fonte");
     } finally {
       setSubmitting(false);
@@ -105,7 +106,8 @@ export default function SourceList({ sources, accounts, onMutate }: SourceListPr
       }
 
       onMutate();
-    } catch {
+    } catch (error) {
+      console.error("Failed to delete source:", error);
       setDeleteError("Erro de conexão ao excluir fonte");
     } finally {
       setDeletingId(null);

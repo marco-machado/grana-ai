@@ -1,7 +1,7 @@
 export default function BudgetsPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Budgets</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Orçamentos</h1>
     </div>
   );
 }

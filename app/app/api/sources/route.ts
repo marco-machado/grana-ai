@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     where: { id: result.data.account_id },
   });
   if (!account) {
-    return badRequest("Validation failed", {
-      account_id: ["Account not found"],
+    return badRequest("Falha na validação", {
+      account_id: ["Conta não encontrada"],
     });
   }
 
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       error.code === "P2002"
     ) {
       return conflict(
-        "A source with this account, type, and identifier already exists"
+        "Já existe uma fonte com esta conta, tipo e identificador"
       );
     }
     throw error;

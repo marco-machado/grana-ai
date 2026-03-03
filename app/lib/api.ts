@@ -23,7 +23,7 @@ function conflict(message: string): Response {
   return Response.json({ data: null, error: { message } } satisfies ApiError, { status: 409 });
 }
 
-function serverError(message = "Internal server error"): Response {
+function serverError(message = "Erro interno do servidor"): Response {
   return Response.json(
     { data: null, error: { message } } satisfies ApiError,
     { status: 500 }
@@ -38,7 +38,7 @@ function fromZodError(error: ZodError): Response {
       fields[key] = messages;
     }
   }
-  return badRequest("Validation failed", fields);
+  return badRequest("Falha na validação", fields);
 }
 
 async function parseJson(request: Request): Promise<[unknown, null] | [null, Response]> {
@@ -46,7 +46,7 @@ async function parseJson(request: Request): Promise<[unknown, null] | [null, Res
     const body = await request.json();
     return [body, null];
   } catch {
-    return [null, badRequest("Invalid JSON in request body")];
+    return [null, badRequest("JSON inválido no corpo da requisição")];
   }
 }
 

@@ -9,9 +9,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) return notFound("Account not found");
+  if (!z.uuid().safeParse(id).success) return notFound("Conta não encontrada");
   const account = await prisma.account.findUnique({ where: { id } });
-  if (!account) return notFound("Account not found");
+  if (!account) return notFound("Conta não encontrada");
   return ok(account);
 }
 
@@ -20,7 +20,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) return notFound("Account not found");
+  if (!z.uuid().safeParse(id).success) return notFound("Conta não encontrada");
   const [body, error] = await parseJson(request);
   if (error) return error;
   const result = updateAccountSchema.safeParse(body);
@@ -37,7 +37,7 @@ export async function PATCH(
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2025"
     ) {
-      return notFound("Account not found");
+      return notFound("Conta não encontrada");
     }
     throw error;
   }
@@ -48,9 +48,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  if (!z.uuid().safeParse(id).success) return notFound("Account not found");
+  if (!z.uuid().safeParse(id).success) return notFound("Conta não encontrada");
   const account = await prisma.account.findUnique({ where: { id } });
-  if (!account) return notFound("Account not found");
+  if (!account) return notFound("Conta não encontrada");
 
   const [sourceCount, txCount, stagingCount] = await Promise.all([
     prisma.source.count({ where: { account_id: id } }),
@@ -60,7 +60,7 @@ export async function DELETE(
   const total = sourceCount + txCount + stagingCount;
   if (total > 0) {
     return conflict(
-      `Cannot delete account: ${total} linked record(s) still reference it. Remove linked sources and transactions first.`
+      `Não é possível excluir a conta: ${total} registro(s) vinculado(s) ainda a referenciam. Remova fontes e transações vinculadas primeiro.`
     );
   }
 
@@ -68,10 +68,10 @@ export async function DELETE(
     await prisma.account.delete({ where: { id } });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2025") return notFound("Account not found");
+      if (error.code === "P2025") return notFound("Conta não encontrada");
       if (error.code === "P2003")
         return conflict(
-          "Cannot delete account: linked records were added concurrently"
+          "Não é possível excluir a conta: registros vinculados foram adicionados simultaneamente"
         );
     }
     throw error;

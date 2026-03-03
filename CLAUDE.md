@@ -12,6 +12,7 @@ Gmail → n8n (orchestration) → Claude API (parsing) → PostgreSQL → Metaba
 ```
 
 **Currency:** BRL only. No multi-currency support.
+**Language:** All UI strings, API error messages, and validation messages must be in pt-BR. Developer-facing logs (`console.error`, etc.) stay in English.
 
 ## Infrastructure
 

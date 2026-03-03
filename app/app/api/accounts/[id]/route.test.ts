@@ -43,7 +43,7 @@ describe("GET /api/accounts/[id]", () => {
 
     const json = await res.json();
     expect(json.data).toBeNull();
-    expect(json.error.message).toBe("Account not found");
+    expect(json.error.message).toBe("Conta não encontrada");
   });
 });
 
@@ -87,7 +87,7 @@ describe("PATCH /api/accounts/[id]", () => {
     expect(res.status).toBe(404);
 
     const json = await res.json();
-    expect(json.error.message).toBe("Account not found");
+    expect(json.error.message).toBe("Conta não encontrada");
   });
 });
 
@@ -126,7 +126,7 @@ describe("DELETE /api/accounts/[id]", () => {
     expect(res.status).toBe(409);
 
     const json = await res.json();
-    expect(json.error.message).toContain("linked record(s) still reference it");
+    expect(json.error.message).toContain("registro(s) vinculado(s) ainda a referenciam");
   });
 
   it("returns 404 for non-existent UUID", async () => {
@@ -134,6 +134,6 @@ describe("DELETE /api/accounts/[id]", () => {
     expect(res.status).toBe(404);
 
     const json = await res.json();
-    expect(json.error.message).toBe("Account not found");
+    expect(json.error.message).toBe("Conta não encontrada");
   });
 });

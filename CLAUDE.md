@@ -19,7 +19,7 @@ Four Docker Compose services:
 
 | Service | Port | Purpose |
 |---------|------|---------|
-| PostgreSQL 17 | 5432 | Database (`finance` DB) |
+| PostgreSQL 17 | 5432 (host may vary, check `docker ps`) | Database (`finance` DB) |
 | n8n | 5678 | Daily email polling, statement processing workflows |
 | Metabase | 3001 | Read-only analytics/dashboards |
 | Next.js app | 3000 | Write operations, forms, embedded Metabase charts |
@@ -39,6 +39,7 @@ docker compose up
 - **Styling:** Tailwind CSS 4 (CSS-first config, no `tailwind.config.ts`)
 - **AI:** Anthropic Claude API for statement parsing and insights
 - **Runtime:** Node 22 Alpine (Docker)
+- **Docker build:** Uses `npm install` (not `npm ci`) due to npm 10/11 lockfile incompatibility ([npm/cli#8726](https://github.com/npm/cli/issues/8726))
 
 ## Key Architecture Decisions
 
@@ -65,15 +66,12 @@ docker compose up
 ## Open Design Decisions
 
 These items from SDD.md §5 are still unresolved:
-- Staging table schema (temporary storage before promotion to `transactions`)
 - Categorization rules engine (DB table vs config file)
 - Historical data ingestion strategy (first-run backlog processing)
 
-## Active Technologies
-- TypeScript 5.x (Node 22 Alpine) + Next.js 15, React 19, Tailwind CSS 4, Prisma ORM, `tsx` (seed runner) (001-project-scaffold)
-- PostgreSQL 17 (Docker), accessed via Prisma. Schema in `app/prisma/schema.prisma`. (001-project-scaffold)
-
 ## Prisma Import Convention
+
+**After switching branches:** Always run `npx prisma generate` if the schema changed — the generated client in `prisma/generated/` is gitignored and can go stale.
 
 With Prisma 6's `prisma-client` generator and custom output path, import from the `client.ts` file directly:
 ```typescript
@@ -84,5 +82,15 @@ In app code, use the singleton from `@/lib/prisma`:
 import { prisma } from "@/lib/prisma";
 ```
 
+## API Conventions
+
+- **Response envelope**: All endpoints return `{ data: T | null, error: { message, fields? } | null }` via helpers in `app/lib/api.ts`
+- **Validation**: Zod v4 schemas in `app/lib/schemas/`. Use `z.flattenError()` (not deprecated `error.flatten()`) for field-level errors.
+- **Route handlers**: Use `Response.json()` (Web Standard), not `NextResponse.json()`. Params are `Promise` in Next.js 15 — always `await params`.
+- **Testing**: Vitest single-run (`npx vitest run`). Tests import route handlers directly. Real `finance_test` database, no mocks for Prisma. `fileParallelism: false` in vitest config.
+- **Running tests locally**: Requires `DATABASE_URL` env var — e.g. `DATABASE_URL="postgresql://finance_user:localdev123@localhost:5433/finance" npx vitest run`. Test setup auto-derives `finance_test` DB from this URL.
+- **Prisma dangerous operations**: Claude Code triggers Prisma's AI safety check. Test setup already sets `PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION`; for manual `db push` commands, it must be passed explicitly.
+
 ## Recent Changes
 - 001-project-scaffold: Full Next.js 15 scaffold — dashboard shell with 8 pages, Prisma schema (Account, Source, Category), category seed data, multi-stage Dockerfile, docker-compose startup chain
+- 002-data-model-sources: Transaction/StagingTransaction/ProcessedStatement models, Account & Source CRUD REST APIs with Zod validation, Sources management UI page, Vitest test suite (58 tests)

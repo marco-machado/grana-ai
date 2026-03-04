@@ -5,15 +5,28 @@
 ```
 E01 Scaffold
  └─► E02 Data Model & Sources
-      └─► E03 Statement Processing
-           └─► E04 Transaction Review
-                ├─► E05 Categorization ──► E06 Budgets
-                ├─► E07 Recurring      ─┐
-                ├─► E08 Installments    ├─► E10 Dashboards
-                └─► E09 Savings        ─┘    E11 Insights
+      ├─► E03 Statement Processing
+      │    └─► E04 Transaction Review
+      │         ├─► E05 Categorization ──► E06 Budgets
+      │         ├─► E07 Recurring      ─┐
+      │         ├─► E08 Installments    ├─► E10 Dashboards
+      │         └─► E09 Savings        ─┘    E11 Insights
+      │
+      └─► E12 Dashboard Build (Umbrella)
+           12.1 Schema Extension
+            ├─► 12.2 Categories API        ─┐
+            ├─► 12.3 Transactions List      │
+            ├─► 12.4 Transaction Review     │
+            ├─► 12.5 Budgets               ├─► 12.9 MetabaseEmbed
+            ├─► 12.6 Recurring              │    ├─► 12.10 Overview
+            ├─► 12.7 Installments           │    └─► 12.11 Trends
+            └─► 12.8 Savings Goals         ─┘
+           12.12 AI Insights (after 12.1 + 12.3)
 ```
 
 Epics 7, 8, 9 are parallel after Epic 4. Epics 10, 11 are parallel after all feature epics.
+
+EPIC-12 is an independent path from E02 — issues 12.2–12.8 are parallel after 12.1.
 
 ## Epic Summary
 
@@ -30,6 +43,7 @@ Epics 7, 8, 9 are parallel after Epic 4. Epics 10, 11 are parallel after all fea
 | 09 | [Savings Goals](EPIC-09-savings.md) | 01, 04 | saving_goals; transactions modified | Not Started |
 | 10 | [Dashboards & Metabase Integration](EPIC-10-dashboards.md) | 01–09 | — | Not Started |
 | 11 | [AI Financial Insights](EPIC-11-insights.md) | 01–09 | — | Not Started |
+| 12 | [Dashboard Build (Umbrella)](EPIC-12-dashboard.md) | 01, 02 | budgets, recurring_items, installment_groups, saving_goals; transactions modified | Not Started |
 
 ## Open Decisions Resolved
 

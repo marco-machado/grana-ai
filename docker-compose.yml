@@ -58,45 +58,32 @@ services:
         condition: service_healthy
 
   app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
+    image: node:24-alpine
+    working_dir: /app
     restart: unless-stopped
     command: >
-      sh -c "echo '[1/4] Pushing database schema...' &&
+      sh -c "npm install &&
+             npx prisma generate &&
+             echo '[1/4] Pushing database schema...' &&
              npx prisma db push --schema=./prisma/schema.prisma --skip-generate &&
              echo '[2/4] Creating partial indexes...' &&
              echo 'CREATE UNIQUE INDEX IF NOT EXISTS \"Category_name_root_unique\" ON \"Category\" (name) WHERE parent_id IS NULL;' | npx prisma db execute --stdin --schema=./prisma/schema.prisma &&
              echo '[3/4] Seeding database...' &&
              npx prisma db seed &&
-             echo '[4/4] Starting server...' &&
-             node server.js"
+             echo '[4/4] Starting dev server...' &&
+             npx next dev -p 3000"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/finance
       - METABASE_URL=http://metabase:3000
       - METABASE_SECRET_KEY=${METABASE_SECRET_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./app:/app
     ports:
       - "${APP_PORT:-3000}:3000"
     depends_on:
       postgres:
         condition: service_healthy
-    develop:
-      watch:
-        - action: sync
-          path: ./app/app
-          target: /app/app
-          ignore:
-            - node_modules/
-            - .next/
-        - action: sync
-          path: ./app/components
-          target: /app/components
-        - action: sync
-          path: ./app/lib
-          target: /app/lib
-        - action: rebuild
-          path: ./app/package.json
 
 volumes:
   postgres_data:

@@ -14,6 +14,10 @@ const TABLES_IN_DELETE_ORDER = [
   "ProcessedStatement",
   "StagingTransaction",
   "Transaction",
+  "Budget",
+  "RecurringItem",
+  "InstallmentGroup",
+  "SavingGoal",
   "Source",
   "Account",
   "Category",
@@ -29,6 +33,11 @@ beforeAll(async () => {
     cwd: import.meta.dirname + "/..",
     stdio: "pipe",
   });
+
+  await prisma.$executeRawUnsafe(`
+    CREATE UNIQUE INDEX IF NOT EXISTS "Budget_category_id_null_period_key"
+    ON "Budget" ("category_id") WHERE "period" IS NULL
+  `);
 });
 
 beforeEach(async () => {

@@ -43,7 +43,7 @@ function CustomTooltip({
   payload?: Array<{ payload: { categoryName: string; total: number; percentage: number } }>;
 }) {
   if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
+  const d = payload[0]!.payload;
   return (
     <div className="rounded-md border bg-popover px-3 py-2 text-sm text-popover-foreground shadow-md">
       <p className="font-medium">{d.categoryName}</p>

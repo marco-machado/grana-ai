@@ -82,7 +82,7 @@ async function fetchTrend(referenceMonth: Date): Promise<MonthTrendPoint[]> {
 
   return Array.from(buckets.entries()).map(([key, val]) => ({
     month: key,
-    label: format(new Date(key + "-01"), "MMM yy"),
+    label: format(new Date(Number(key.slice(0, 4)), Number(key.slice(5, 7)) - 1), "MMM yy"),
     income: val.income,
     expenses: val.expenses,
   }));

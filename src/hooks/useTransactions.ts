@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { TransactionWithRelations, Category } from "@/types/database";
 
@@ -15,6 +15,10 @@ export interface TransactionFilters {
 
 const PAGE_SIZE = 25;
 
+function escapeFilterValue(value: string): string {
+  return value.replace(/[\\%_,()."]/g, (ch) => `\\${ch}`);
+}
+
 export function useTransactions(
   filters: TransactionFilters,
   sortField: SortField,
@@ -26,7 +30,8 @@ export function useTransactions(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTransactions = useCallback(async () => {
+  useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     setError(null);
 
@@ -35,8 +40,9 @@ export function useTransactions(
       .select("*, account(*), category(*)", { count: "exact" });
 
     if (filters.search) {
+      const escaped = escapeFilterValue(filters.search);
       query = query.or(
-        `description_raw.ilike.%${filters.search}%,description_clean.ilike.%${filters.search}%`,
+        `description_raw.ilike.%${escaped}%,description_clean.ilike.%${escaped}%`,
       );
     }
 
@@ -63,23 +69,25 @@ export function useTransactions(
     const from = page * PAGE_SIZE;
     query = query.range(from, from + PAGE_SIZE - 1);
 
-    const { data, error: fetchError, count } = await query;
+    query.then(({ data, error: fetchError, count }) => {
+      if (cancelled) return;
 
-    if (fetchError) {
-      setError(fetchError.message);
-      setTransactions([]);
-      setTotalCount(0);
-    } else {
-      setTransactions(data as TransactionWithRelations[]);
-      setTotalCount(count ?? 0);
-    }
+      if (fetchError) {
+        setError(fetchError.message);
+        setTransactions([]);
+        setTotalCount(0);
+      } else {
+        setTransactions(data as TransactionWithRelations[]);
+        setTotalCount(count ?? 0);
+      }
 
-    setLoading(false);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [filters, sortField, sortDirection, page]);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, [fetchTransactions]);
 
   return {
     transactions,

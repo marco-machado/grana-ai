@@ -18,8 +18,8 @@ import type { AccountType } from "@/types/database";
 
 const accountTypeLabels: Record<AccountType, string> = {
   checking: "Conta Corrente",
-  savings: "Poupanca",
-  credit_card: "Cartao de Credito",
+  savings: "Poupança",
+  credit_card: "Cartão de Crédito",
   investment: "Investimento",
 };
 
@@ -106,7 +106,7 @@ export function Contas() {
                     </span>
                   </div>
                   <div className="flex justify-between text-muted-foreground">
-                    <span>Transacoes</span>
+                    <span>Transações</span>
                     <span>{account.transactionCount}</span>
                   </div>
                 </div>

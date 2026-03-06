@@ -13,12 +13,12 @@ import {
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import {
   useTransactions,
-  useAccounts,
   useCategories,
   type TransactionFilters,
   type SortField,
   type SortDirection,
 } from "@/hooks/useTransactions";
+import { useAccounts } from "@/hooks/useAccounts";
 
 function SortIcon({ field, active, direction }: { field: string; active: string; direction: SortDirection }) {
   if (field !== active) return <ArrowUpDown className="ml-1 h-4 w-4 inline opacity-40" />;
@@ -51,7 +51,7 @@ export function Transacoes() {
 
   const { transactions, totalCount, totalPages, loading, error, pageSize } =
     useTransactions(filters, sortField, sortDirection, page);
-  const accounts = useAccounts();
+  const { accounts } = useAccounts();
   const categories = useCategories();
 
   function updateFilter(key: keyof TransactionFilters, value: string) {

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import type { TransactionWithRelations, Account, Category } from "@/types/database";
+import type { TransactionWithRelations, Category } from "@/types/database";
 
 export type SortField = "date" | "amount" | "description";
 export type SortDirection = "asc" | "desc";
@@ -89,22 +89,6 @@ export function useTransactions(
     error,
     pageSize: PAGE_SIZE,
   };
-}
-
-export function useAccounts() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
-
-  useEffect(() => {
-    supabase
-      .from("account")
-      .select("*")
-      .order("name")
-      .then(({ data }) => {
-        if (data) setAccounts(data);
-      });
-  }, []);
-
-  return accounts;
 }
 
 export function useCategories() {

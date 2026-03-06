@@ -50,7 +50,7 @@ export function VisaoMensal() {
   if (error) {
     return (
       <div>
-        <h2 className="text-2xl font-bold mb-6">Visao Mensal</h2>
+        <h2 className="text-2xl font-bold mb-6">Visão Mensal</h2>
         <p className="text-destructive">Erro: {error}</p>
       </div>
     );
@@ -59,7 +59,7 @@ export function VisaoMensal() {
   return (
     <div>
       <div className="flex items-center gap-4 mb-8">
-        <h2 className="text-2xl font-bold">Visao Mensal</h2>
+        <h2 className="text-2xl font-bold">Visão Mensal</h2>
         <div className="flex items-center gap-2 ml-auto">
           <button
             onClick={goToPreviousMonth}

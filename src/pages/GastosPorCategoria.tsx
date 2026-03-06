@@ -103,7 +103,7 @@ export function GastosPorCategoria() {
 
       {!loading && !error && data.length === 0 && (
         <p className="text-muted-foreground py-10 text-center">
-          Nenhum gasto encontrado neste periodo.
+          Nenhum gasto encontrado neste período.
         </p>
       )}
 
@@ -112,7 +112,7 @@ export function GastosPorCategoria() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <Card>
               <CardHeader>
-                <CardTitle>Distribuicao</CardTitle>
+                <CardTitle>Distribuição</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>

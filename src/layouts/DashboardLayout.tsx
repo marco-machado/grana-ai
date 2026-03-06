@@ -8,9 +8,9 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { to: "/visao-mensal", label: "Visao Mensal", icon: BarChart3 },
+  { to: "/visao-mensal", label: "Visão Mensal", icon: BarChart3 },
   { to: "/gastos-por-categoria", label: "Categorias", icon: PieChart },
-  { to: "/transacoes", label: "Transacoes", icon: List },
+  { to: "/transacoes", label: "Transações", icon: List },
   { to: "/contas", label: "Contas", icon: Wallet },
 ];
 

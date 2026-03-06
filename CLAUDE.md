@@ -74,6 +74,7 @@ Three tables in Supabase, two enums. Migrations in `supabase/migrations/`.
 
 - Use the **legacy JWT anon key** (starts with `eyJ...`), not `sb_publishable_` keys — supabase-js v2 doesn't support them.
 - RLS is off (single-user app, no auth).
+- **Supabase MCP via PAT**: The official Supabase plugin requires OAuth re-auth every session ([#20785](https://github.com/anthropics/claude-code/issues/20785)). Workaround: `.mcp.json` runs `@supabase/mcp-server-supabase` locally with a PAT. The npm package has broken transitive deps (`zod`, `@modelcontextprotocol/sdk`), so it's installed at `~/.local/mcp-servers/supabase/` with those deps added manually. Server name must NOT be `"supabase"` ([#21368](https://github.com/anthropics/claude-code/issues/21368)).
 
 ## UI Conventions
 

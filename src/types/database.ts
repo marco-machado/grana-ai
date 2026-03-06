@@ -19,7 +19,7 @@ export interface Transaction {
   id: string;
   date: string;
   description_raw: string;
-  description_clean: string | null;
+  description_clean: string;
   amount: number;
   account_id: string;
   category_id: string | null;

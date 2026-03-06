@@ -57,6 +57,11 @@ Three tables in Supabase, two enums. Migrations in `supabase/migrations/`.
 - **`GRANA-AI-SPEC.md`** — Full product spec. Read for context on scope and goals.
 - **`supabase/migrations/`** — SQL migrations (already applied to Supabase).
 - **`docker-compose.yml`** — Service definitions.
+- **`src/hooks/`** — Data-fetching hooks (useMonthlyData, useCategorySpending, useTransactions, useAccounts).
+- **`src/components/ui/`** — shadcn/ui base components (card, table, input, select).
+- **`src/lib/supabase.ts`** — Supabase client singleton.
+- **`src/lib/utils.ts`** — `cn()`, `formatCurrency()`, `formatDate()`.
+- **`src/types/database.ts`** — TypeScript types matching Supabase schema.
 
 ## Dashboard Views (React)
 
@@ -64,6 +69,18 @@ Three tables in Supabase, two enums. Migrations in `supabase/migrations/`.
 2. **Gastos por categoria** — Spending by category (pie/bar chart)
 3. **Transações** — Filterable/searchable transaction table
 4. **Contas** — Balance summary per account
+
+## Supabase Gotchas
+
+- Use the **legacy JWT anon key** (starts with `eyJ...`), not `sb_publishable_` keys — supabase-js v2 doesn't support them.
+- RLS is off (single-user app, no auth).
+
+## UI Conventions
+
+- Tailwind CSS + shadcn/ui with dark mode (`class` strategy, always-on).
+- Primary color: green (hsl 142 76% 36%). CSS variables in `src/index.css`.
+- Charts: Recharts. Style tooltips/grids to match dark theme.
+- Green for income/positive, red for expenses/negative throughout.
 
 ## Scope Boundaries
 

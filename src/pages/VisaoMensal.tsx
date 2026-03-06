@@ -1,6 +1,4 @@
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Wallet, Loader2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -12,7 +10,11 @@ import {
   Legend,
 } from "recharts";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
+import { MonthPicker } from "@/components/MonthPicker";
+import { LoadingState, ErrorState } from "@/components/StateDisplay";
 import { cn, formatCurrency } from "@/lib/utils";
+import { INCOME_COLOR, EXPENSE_COLOR, chartGridStyle, chartAxisStyle, chartTooltipStyle } from "@/lib/chart-theme";
 import { useMonthlyData } from "@/hooks/useMonthlyData";
 
 function SummaryCard({
@@ -45,44 +47,30 @@ export function VisaoMensal() {
   const { currentMonth, summary, trend, loading, error, goToPreviousMonth, goToNextMonth } =
     useMonthlyData();
 
-  const monthLabel = format(currentMonth, "MMMM yyyy", { locale: ptBR });
-
   if (error) {
     return (
       <div>
-        <h2 className="text-2xl font-bold mb-6">Visão Mensal</h2>
-        <p className="text-destructive">Erro: {error}</p>
+        <PageHeader title="Visão Mensal" />
+        <ErrorState message={error} />
       </div>
     );
   }
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-8">
-        <h2 className="text-2xl font-bold">Visão Mensal</h2>
-        <div className="flex items-center gap-2 ml-auto">
-          <button
-            onClick={goToPreviousMonth}
-            className="p-1.5 rounded-md hover:bg-accent transition-colors"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <span className="text-sm font-medium min-w-[140px] text-center capitalize">
-            {monthLabel}
-          </span>
-          <button
-            onClick={goToNextMonth}
-            className="p-1.5 rounded-md hover:bg-accent transition-colors"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Visão Mensal"
+        actions={
+          <MonthPicker
+            currentMonth={currentMonth}
+            onPrevious={goToPreviousMonth}
+            onNext={goToNextMonth}
+          />
+        }
+      />
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <LoadingState />
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -90,19 +78,19 @@ export function VisaoMensal() {
               title="Receitas"
               value={summary.income}
               icon={TrendingUp}
-              colorClass="text-green-500"
+              colorClass="text-income"
             />
             <SummaryCard
               title="Despesas"
               value={Math.abs(summary.expenses)}
               icon={TrendingDown}
-              colorClass="text-red-500"
+              colorClass="text-expense"
             />
             <SummaryCard
               title="Saldo"
               value={summary.balance}
               icon={Wallet}
-              colorClass={summary.balance >= 0 ? "text-green-500" : "text-red-500"}
+              colorClass={summary.balance >= 0 ? "text-income" : "text-expense"}
             />
           </div>
 
@@ -116,23 +104,23 @@ export function VisaoMensal() {
                   <AreaChart data={trend}>
                     <defs>
                       <linearGradient id="gradientIncome" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(142, 76%, 36%)" stopOpacity={0} />
+                        <stop offset="5%" stopColor={INCOME_COLOR} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={INCOME_COLOR} stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="gradientExpenses" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(0, 84%, 60%)" stopOpacity={0} />
+                        <stop offset="5%" stopColor={EXPENSE_COLOR} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={EXPENSE_COLOR} stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(240, 3.7%, 15.9%)" />
+                    <CartesianGrid {...chartGridStyle} />
                     <XAxis
                       dataKey="label"
-                      tick={{ fill: "hsl(240, 5%, 64.9%)", fontSize: 12 }}
+                      tick={chartAxisStyle}
                       axisLine={false}
                       tickLine={false}
                     />
                     <YAxis
-                      tick={{ fill: "hsl(240, 5%, 64.9%)", fontSize: 12 }}
+                      tick={chartAxisStyle}
                       axisLine={false}
                       tickLine={false}
                       tickFormatter={(v: number) =>
@@ -143,12 +131,8 @@ export function VisaoMensal() {
                       }
                     />
                     <Tooltip
-                      contentStyle={{
-                        backgroundColor: "hsl(240, 10%, 3.9%)",
-                        border: "1px solid hsl(240, 3.7%, 15.9%)",
-                        borderRadius: "0.5rem",
-                      }}
-                      labelStyle={{ color: "hsl(0, 0%, 98%)" }}
+                      contentStyle={chartTooltipStyle}
+                      labelStyle={{ color: "hsl(var(--foreground))" }}
                       formatter={(value: number) => formatCurrency(value)}
                     />
                     <Legend />
@@ -156,7 +140,7 @@ export function VisaoMensal() {
                       type="monotone"
                       dataKey="income"
                       name="Receitas"
-                      stroke="hsl(142, 76%, 36%)"
+                      stroke={INCOME_COLOR}
                       fill="url(#gradientIncome)"
                       strokeWidth={2}
                     />
@@ -164,7 +148,7 @@ export function VisaoMensal() {
                       type="monotone"
                       dataKey="expenses"
                       name="Despesas"
-                      stroke="hsl(0, 84%, 60%)"
+                      stroke={EXPENSE_COLOR}
                       fill="url(#gradientExpenses)"
                       strokeWidth={2}
                     />

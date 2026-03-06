@@ -11,29 +11,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format, startOfMonth, endOfMonth, subMonths, addMonths } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { PageHeader } from "@/components/PageHeader";
+import { MonthPicker } from "@/components/MonthPicker";
+import { LoadingState, ErrorState, EmptyState } from "@/components/StateDisplay";
+import { CHART_COLORS } from "@/lib/chart-theme";
 import { formatCurrency } from "@/lib/utils";
 import { useCategorySpending } from "@/hooks/useCategorySpending";
-
-const COLORS = [
-  "#22c55e",
-  "#3b82f6",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#ec4899",
-  "#14b8a6",
-  "#f97316",
-  "#06b6d4",
-  "#a855f7",
-  "#84cc16",
-  "#e11d48",
-  "#6366f1",
-  "#10b981",
-  "#d946ef",
-];
 
 function CustomTooltip({
   active,
@@ -64,47 +49,29 @@ export function GastosPorCategoria() {
     endDate,
   );
 
-  const monthLabel = format(currentMonth, "MMMM yyyy", { locale: ptBR });
-
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Gastos por Categoria</h2>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setCurrentMonth((m) => subMonths(m, 1))}
-            className="rounded-md p-2 hover:bg-accent transition-colors"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <span className="text-sm font-medium w-40 text-center capitalize">
-            {monthLabel}
-          </span>
-          <button
-            onClick={() => setCurrentMonth((m) => addMonths(m, 1))}
-            className="rounded-md p-2 hover:bg-accent transition-colors"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title="Gastos por Categoria"
+        actions={
+          <MonthPicker
+            currentMonth={currentMonth}
+            onPrevious={() => setCurrentMonth((m) => subMonths(m, 1))}
+            onNext={() => setCurrentMonth((m) => addMonths(m, 1))}
+          />
+        }
+      />
 
-      {loading && (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
-      )}
+      {loading && <LoadingState />}
 
-      {error && (
-        <div className="rounded-md border border-destructive/50 bg-destructive/10 p-4 text-sm text-destructive">
-          Erro ao carregar dados: {error}
-        </div>
-      )}
+      {error && <ErrorState message={error} />}
 
       {!loading && !error && data.length === 0 && (
-        <p className="text-muted-foreground py-10 text-center">
-          Nenhum gasto encontrado neste período.
-        </p>
+        <EmptyState
+          icon={BarChart3}
+          title="Nenhum gasto encontrado"
+          description="Nenhum gasto encontrado neste período."
+        />
       )}
 
       {!loading && !error && data.length > 0 && (
@@ -129,11 +96,17 @@ export function GastosPorCategoria() {
                       {data.map((_, i) => (
                         <Cell
                           key={i}
-                          fill={COLORS[i % COLORS.length]}
+                          fill={CHART_COLORS[i % CHART_COLORS.length]}
                         />
                       ))}
                     </Pie>
                     <Tooltip content={<CustomTooltip />} />
+                    <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central">
+                      <tspan x="50%" dy="-0.5em" className="fill-muted-foreground text-xs">Total</tspan>
+                      <tspan x="50%" dy="1.4em" className="fill-foreground text-sm font-semibold">
+                        {formatCurrency(totalSpending)}
+                      </tspan>
+                    </text>
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -164,7 +137,7 @@ export function GastosPorCategoria() {
                       {data.map((_, i) => (
                         <Cell
                           key={i}
-                          fill={COLORS[i % COLORS.length]}
+                          fill={CHART_COLORS[i % CHART_COLORS.length]}
                         />
                       ))}
                     </Bar>
@@ -188,7 +161,7 @@ export function GastosPorCategoria() {
                     <div className="flex items-center gap-3">
                       <div
                         className="h-3 w-3 rounded-full shrink-0"
-                        style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                        style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                       />
                       <span className="text-sm font-medium">
                         {item.categoryName}

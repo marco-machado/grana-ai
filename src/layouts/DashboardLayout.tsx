@@ -17,7 +17,7 @@ const navItems = [
 export function DashboardLayout() {
   return (
     <div className="flex h-screen bg-background">
-      <aside className="w-64 border-r border-border flex flex-col">
+      <aside className="hidden md:flex w-64 shrink-0 border-r border-border bg-card flex-col">
         <div className="p-6">
           <h1 className="text-xl font-bold text-foreground">Grana AI</h1>
         </div>
@@ -41,9 +41,30 @@ export function DashboardLayout() {
           ))}
         </nav>
       </aside>
-      <main className="flex-1 overflow-auto p-8">
-        <Outlet />
+      <main className="flex-1 overflow-auto px-4 md:px-8 py-6 pb-20 md:pb-6">
+        <div className="max-w-6xl mx-auto">
+          <Outlet />
+        </div>
       </main>
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 border-t bg-card/95 backdrop-blur-sm flex items-center justify-around z-50">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              cn(
+                "flex flex-col items-center gap-1 text-xs font-medium transition-colors",
+                isActive
+                  ? "text-primary"
+                  : "text-muted-foreground",
+              )
+            }
+          >
+            <item.icon className="h-5 w-5" />
+            {item.label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }

@@ -6,9 +6,9 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
+    --card: 0 0% 98%;
     --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
+    --popover: 0 0% 98%;
     --popover-foreground: 240 10% 3.9%;
     --primary: 142 76% 36%;
     --primary-foreground: 355 7% 97%;
@@ -20,18 +20,28 @@
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --border: 240 6% 85%;
+    --input: 240 6% 85%;
     --ring: 142 76% 36%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+    --income: 142 71% 45%;
+    --expense: 0 84% 60%;
+    --chart-1: 142 71% 45%;
+    --chart-2: 217 91% 60%;
+    --chart-3: 45 93% 47%;
+    --chart-4: 0 84% 60%;
+    --chart-5: 263 70% 50%;
+    --chart-6: 330 81% 60%;
+    --chart-7: 174 72% 56%;
+    --chart-8: 27 96% 61%;
   }
 
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 10% 7%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 10% 7%;
     --popover-foreground: 0 0% 98%;
     --primary: 142 76% 36%;
     --primary-foreground: 355 7% 97%;
@@ -43,9 +53,20 @@
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 240 4% 20%;
+    --input: 240 4% 20%;
     --ring: 142 76% 36%;
+    --radius: 0.75rem;
+    --income: 142 71% 45%;
+    --expense: 0 84% 60%;
+    --chart-1: 142 71% 45%;
+    --chart-2: 217 91% 60%;
+    --chart-3: 45 93% 47%;
+    --chart-4: 0 84% 60%;
+    --chart-5: 263 70% 50%;
+    --chart-6: 330 81% 60%;
+    --chart-7: 174 72% 56%;
+    --chart-8: 27 96% 61%;
   }
 }
 

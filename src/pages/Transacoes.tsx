@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Search, ArrowUp, ArrowDown, ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableHeader,
@@ -11,6 +13,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
+import { PageHeader } from "@/components/PageHeader";
+import { LoadingState, EmptyState, ErrorState } from "@/components/StateDisplay";
 import {
   useTransactions,
   useCategories,
@@ -69,6 +73,8 @@ export function Transacoes() {
     setPage(0);
   }
 
+  const hasActiveFilters = filters.search || filters.accountId || filters.categoryId || filters.dateStart || filters.dateEnd;
+
   const accountOptions = [
     { value: "", label: "Todas as contas" },
     ...accounts.map((a) => ({ value: a.id, label: a.name })),
@@ -81,53 +87,98 @@ export function Transacoes() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Transações</h2>
+      <PageHeader
+        title="Transações"
+        subtitle={totalCount > 0 ? `${totalCount} transações encontradas` : undefined}
+      />
 
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por descrição..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select
-          options={accountOptions}
-          value={filters.accountId}
-          onChange={(e) => updateFilter("accountId", e.target.value)}
-          className="w-48"
-        />
-        <Select
-          options={categoryOptions}
-          value={filters.categoryId}
-          onChange={(e) => updateFilter("categoryId", e.target.value)}
-          className="w-48"
-        />
-        <Input
-          type="date"
-          value={filters.dateStart}
-          onChange={(e) => updateFilter("dateStart", e.target.value)}
-          className="w-40"
-          placeholder="Data início"
-        />
-        <Input
-          type="date"
-          value={filters.dateEnd}
-          onChange={(e) => updateFilter("dateEnd", e.target.value)}
-          className="w-40"
-          placeholder="Data fim"
-        />
-      </div>
+      <Card className="mb-6">
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-3">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por descrição..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select
+              options={accountOptions}
+              value={filters.accountId}
+              onChange={(e) => updateFilter("accountId", e.target.value)}
+              className="w-48"
+            />
+            <Select
+              options={categoryOptions}
+              value={filters.categoryId}
+              onChange={(e) => updateFilter("categoryId", e.target.value)}
+              className="w-48"
+            />
+            <Input
+              type="date"
+              value={filters.dateStart}
+              onChange={(e) => updateFilter("dateStart", e.target.value)}
+              className="w-40"
+              placeholder="Data início"
+            />
+            <Input
+              type="date"
+              value={filters.dateEnd}
+              onChange={(e) => updateFilter("dateEnd", e.target.value)}
+              className="w-40"
+              placeholder="Data fim"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      {error && (
-        <div className="rounded-md bg-destructive/10 p-4 mb-4 text-destructive text-sm">
-          Erro ao carregar transações: {error}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          {filters.search && (
+            <Badge onDismiss={() => { updateFilter("search", ""); setSearchInput(""); }}>
+              Busca: {filters.search}
+            </Badge>
+          )}
+          {filters.accountId && (
+            <Badge onDismiss={() => updateFilter("accountId", "")}>
+              {accounts.find(a => a.id === filters.accountId)?.name ?? "Conta"}
+            </Badge>
+          )}
+          {filters.categoryId && (
+            <Badge onDismiss={() => updateFilter("categoryId", "")}>
+              {categories.find(c => c.id === filters.categoryId)?.name ?? "Categoria"}
+            </Badge>
+          )}
+          {filters.dateStart && (
+            <Badge onDismiss={() => updateFilter("dateStart", "")}>
+              De: {filters.dateStart}
+            </Badge>
+          )}
+          {filters.dateEnd && (
+            <Badge onDismiss={() => updateFilter("dateEnd", "")}>
+              Até: {filters.dateEnd}
+            </Badge>
+          )}
+          <button
+            onClick={() => {
+              setFilters({ search: "", accountId: "", categoryId: "", dateStart: "", dateEnd: "" });
+              setSearchInput("");
+              setPage(0);
+            }}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Limpar filtros
+          </button>
         </div>
       )}
 
-      <div className="rounded-md border">
+      {error ? (
+        <ErrorState message={error} />
+      ) : (
+        <>
+      <div className="rounded-md border hidden md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -187,7 +238,7 @@ export function Transacoes() {
                   <TableCell
                     className={cn(
                       "text-right whitespace-nowrap font-medium",
-                      t.amount >= 0 ? "text-green-500" : "text-red-500",
+                      t.amount >= 0 ? "text-income" : "text-expense",
                     )}
                   >
                     {formatCurrency(t.amount)}
@@ -197,6 +248,39 @@ export function Transacoes() {
             )}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <LoadingState />
+        ) : transactions.length === 0 ? (
+          <EmptyState icon={Search} title="Nenhuma transação encontrada" />
+        ) : (
+          transactions.map((t) => (
+            <Card key={t.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-2 mb-1">
+                  <p className="text-sm font-medium leading-tight">
+                    {t.description_clean || t.description_raw}
+                  </p>
+                  <span className={cn(
+                    "text-sm font-medium whitespace-nowrap",
+                    t.amount >= 0 ? "text-income" : "text-expense",
+                  )}>
+                    {formatCurrency(t.amount)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{formatDate(t.date)}</span>
+                  <span>·</span>
+                  <span>{t.category?.name ?? "—"}</span>
+                  <span>·</span>
+                  <span>{t.account.name}</span>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       {totalPages > 1 && (
@@ -224,6 +308,8 @@ export function Transacoes() {
             </button>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

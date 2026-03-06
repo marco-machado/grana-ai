@@ -1,0 +1,15 @@
+INSERT INTO category (name) VALUES
+  ('Alimentação'),
+  ('Moradia'),
+  ('Contas e Utilidades'),
+  ('Transporte'),
+  ('Saúde'),
+  ('Educação'),
+  ('Assinaturas'),
+  ('Vestuário'),
+  ('Impostos e Taxas'),
+  ('Transferências Pessoais'),
+  ('Cartão de Crédito'),
+  ('Financiamentos'),
+  ('Receitas'),
+  ('Outros');
